@@ -1,0 +1,40 @@
+{
+	"cwd": "D:\\xampp2\\htdocs\\natarizkie2\\simple-framework7-app",
+	"type": [
+		"web",
+		"cordova"
+	],
+	"name": "Simple Framework7 App",
+	"framework": "core",
+	"template": "tabs",
+	"bundler": "webpack",
+	"cssPreProcessor": "stylus",
+	"theming": {
+		"customColor": false,
+		"color": "#dd4826",
+		"darkTheme": false,
+		"iconFonts": true,
+		"fillBars": false
+	},
+	"customBuild": false,
+	"webpack": {
+		"developmentSourceMap": true,
+		"productionSourceMap": true,
+		"hashAssets": false,
+		"preserveAssetsPaths": false,
+		"inlineAssets": true
+	},
+	"pkg": "io.framework7.myapp",
+	"cordova": {
+		"folder": "cordova",
+		"platforms": [
+			"ios",
+			"android"
+		],
+		"plugins": [
+			"cordova-plugin-statusbar",
+			"cordova-plugin-keyboard",
+			"cordova-plugin-splashscreen"
+		]
+	}
+}

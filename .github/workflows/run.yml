@@ -1,0 +1,60 @@
+name: Automated Migration
+
+on:
+  push:
+    branches:
+      - main # Running workflow when there is a push to the main branch
+
+  schedule:
+    - cron: "* */6 * * *" # Schedule a workflow to run every 6 hours
+
+  workflow_dispatch: # Allows workflows to be run manually from the GitHub interface
+
+permissions:
+  contents: write # Grant permission to write to repository content
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest # Running the job on a runner with the latest Ubuntu operating system
+
+    steps:
+      - name: Setup Debug Information
+        run: echo "::debug::Triggered by ref = ${{github.ref}}" # Display debug information for trigger references
+
+      - name: Setup Global Directory
+        run: | # Add the working directory to the safe directory list and set the default branch for the new repository
+          git config --global --add safe.directory /github/workspace
+          git config --global init.defaultBranch main
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true # Ensure GitHub credentials are saved for the next steps
+          fetch-depth: 0 # Retrieve the entire commit history to enable more detailed commits
+
+      - name: Update Timestamp File
+        run: | # Get the current time and update the timestamp.txt file with the current time
+          current_time=$(date '+%Y-%m-%d %H:%M:%S')
+          echo "Updated on $current_time" > src/static/text/timestamp.txt
+
+      - name: Setup Git Configuration
+        run: | # Set Git user email and Git username
+          git config user.email "natarizkie2@gmail.com"
+          git config user.name "natarizkie2"
+
+      - name: Prepare Commit
+        run: | # Create a list of possible commit messages, select a random commit message, add the change file to the staging area, and create a commit with a random message
+          commit_messages=("chore: update auth login file with current email for consistency" "fix: correct css format to comply with ISO 8601 standards" "docs: refresh websocket file to reflect the latest update in documentation" "style: adjust css format for better readability and consistency" "refactor: streamline logic generation script for improved performance" "test: validate form update functionality with new test cases" "perf: enhance compile update speed by optimizing the file write operation" "build: include connection file in the build process for accurate deployment records" "ci: configure CI pipeline to automatically update css file during each build" "feat: add additional metadata to cordova file for better tracking and auditing")
+          random_msg=${commit_messages[$RANDOM % ${#commit_messages[@]}]}
+          git add -A
+          git commit -m "$random_msg" || echo "chore: no changes to commit"
+
+      - name: GitHub Push
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          force: true # Force push of changes to the repository
+          directory: '.' # Working directory
+          github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub token for authentication
+          branch: main # Branch destination for push
+
+# Get references from dante4rt and zuramai
